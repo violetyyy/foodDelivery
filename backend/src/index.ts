@@ -4,6 +4,7 @@ import userRoutes from "./routes/user.route.js";
 import foodOrderRoutes from "./routes/foodOrder.route.js";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import categoryRoutes from "./routes/category.route.js";
 
 dotenv.config();
 mongoose.connect(process.env.MONGO_URI as string);
@@ -16,6 +17,7 @@ console.log("first");
 server.use("/food", foodsRouter);
 server.use("/users", userRoutes);
 server.use("/food-order", foodOrderRoutes);
+server.use("/categories", categoryRoutes);
 
 server.get("/", (_req, res) => {
   res.send("Hello Dashka");
