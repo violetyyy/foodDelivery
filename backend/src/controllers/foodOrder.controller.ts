@@ -16,7 +16,6 @@ export const getAllOrders = async (_req: Request, res: Response) => {
 export const createOrder = async (req: Request, res: Response) => {
   const { user, foodOrderItems } = req.body;
   try {
-    // Calculate total price
     let totalPrice = 0;
     for (const item of foodOrderItems) {
       const food = await Food.findById(item.food);

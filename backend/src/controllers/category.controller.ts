@@ -1,18 +1,12 @@
 import { Request, Response } from "express";
 import { Category } from "../models/category.model.js";
 
-export const getAllCategories = async (
-  request: Request,
-  response: Response
-) => {
+export const getAllCategories = async (_req: Request, res: Response) => {
   try {
-    const category = await Category.find();
-    response.json({ success: true, data: category });
+    const categories = await Category.find();
+    res.json({ success: true, data: categories });
   } catch (error) {
-    response.status(444).json({
-      success: false,
-      error: error,
-    });
+    res.status(500).json({ success: false, error });
   }
 };
 
@@ -25,24 +19,21 @@ export const createCategory = async (req: Request, res: Response) => {
   }
 };
 
-export const updateCategory = async (request: Request, response: Response) => {
+export const updateCategory = async (req: Request, res: Response) => {
   try {
-    const updatedCategory = request.body;
-    const { foodCategoryId } = request.params;
     const category = await Category.findByIdAndUpdate(
-      foodCategoryId,
-      updatedCategory,
-      {
-        new: true,
-      }
+      req.params.categoryId,
+      req.body,
+      { new: true }
     );
-
-    response.json({ success: true, data: category });
+    if (!category) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
+    }
+    res.json({ success: true, data: category });
   } catch (error) {
-    response.status(444).json({
-      success: false,
-      error: error,
-    });
+    res.status(500).json({ success: false, error });
   }
 };
 
