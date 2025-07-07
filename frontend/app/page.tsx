@@ -1,4 +1,5 @@
 import { Header, Footer } from "@/components/layout";
+import { HomeMenu } from "@/components/layout/HomeMenu";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
         className=" bg-center bg-no-repeat bg-cover h-[660px] mt-[72px] mb-[100px]"
         style={{ backgroundImage: "url('/bg.png')" }}
       ></div>
+      <HomeMenu />
       <Footer />
     </div>
   );
