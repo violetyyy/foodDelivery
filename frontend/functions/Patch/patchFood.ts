@@ -1,14 +1,22 @@
 import { Food } from "@/app/(types)/page";
 import { url } from "@/utils/url";
 
-export const patchFood = async (foodId: string, food: Food) => {
+export interface FoodUpdateInput {
+  foodName: string;
+  price: string;
+  ingredients: string;
+  image: string;
+  category: string;
+}
+
+export const patchFood = async (foodId: string, food: FoodUpdateInput) => {
   try {
     const data = {
       foodName: food.foodName,
       price: food.price,
       ingredients: food.ingredients,
       image: food.image,
-      category: food.category.categoryName,
+      category: food.category,
     };
     await fetch(`${url}food/${foodId}`, {
       method: "PATCH",

@@ -1,4 +1,4 @@
-"use client";
+"use client`";
 
 import { fetchCategories, fetchFoods } from "@/functions/Get";
 import { Food, Category } from "@/app/(types)/page";
