@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { FoodOrder } from "../models/foodOrder.model.js";
-import { Food } from "../models/food.model.js";
+import { FoodOrder } from "../models/foodOrder.model";
+import { Food } from "../models/food.model";
 
 export const getAllOrders = async (_req: Request, res: Response) => {
   try {

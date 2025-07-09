@@ -17,7 +17,7 @@ const signInSchema = yup.object({
     .required("Please must enter your password"),
 });
 
-type SignInFormData = yup.InferType<typeof signInSchema>; // typescript utility type
+type SignInFormData = yup.InferType<typeof signInSchema>;
 
 export default function SignUp() {
   const {
@@ -25,13 +25,34 @@ export default function SignUp() {
     handleSubmit,
     formState: { errors },
   } = useForm<SignInFormData>({
-    resolver: yupResolver(signInSchema), // connect with yup validation
+    resolver: yupResolver(signInSchema),
     mode: "onChange",
   });
 
   const onSubmit = async (formData: SignInFormData) => {
-    console.log("formData", formData);
+    try {
+      const res = await fetch("http://localhost:8000/users/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+
+      console.log("Sign in successful:", data);
+      // alert("Sign in successful!");
+    } catch (err: any) {
+      console.error("Login error:", err);
+      alert(err.message);
+    }
   };
+
   return (
     <div className="text-black w-screen h-screen bg-white py-5 pr-5 justify-between flex items-center">
       <div className="w-full justify-center flex">
@@ -43,30 +64,35 @@ export default function SignUp() {
           <p className=" text-[16px] font-normal text-[#71717A] my-6">
             Login to enjoy your favorite dishes
           </p>
-          <input
-            type="text"
-            className=" w-full h-[36px] p-3 border border-gray-300 rounded-md"
-            placeholder="Enter your email address"
-          />
-          <input
-            {...register("password")}
-            id="password"
-            type="password"
-            className=" w-full h-[36px] p-3 border border-gray-300 rounded-md mt-6"
-            placeholder="Password"
-          />
-          <Link
-            href={"/forgot-password"}
-            className=" font-normal text-[14px] underline mt-6 cursor-pointer"
-          >
-            Forgot password?
-          </Link>
-          <Link
-            href={"/"}
-            className="w-full h-[36px] mt-6 bg-black text-white rounded-md"
-          >
-            Let's go
-          </Link>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input
+              {...register("email")}
+              type="email"
+              className="w-full h-[36px] p-3 border border-gray-300 rounded-md"
+              placeholder="Enter your email address"
+            />
+            <input
+              {...register("password")}
+              id="password"
+              type="password"
+              className=" w-full h-[36px] p-3 border border-gray-300 rounded-md mt-6"
+              placeholder="Password"
+            />
+            <Link
+              href={"/forgot-password"}
+              className=" font-normal text-[14px] underline mt-6 cursor-pointer"
+            >
+              Forgot password?
+            </Link>
+            <button
+              type="submit"
+              className="w-full h-[36px] mt-6 bg-black text-white rounded-md flex justify-center items-center cursor-pointer"
+            >
+              Let's go
+            </button>
+          </form>
+
           <div className="flex gap-3 mt-6 justify-center">
             <p className="text-[16px] font-normal text-[#71717A]">
               Don't have an account?

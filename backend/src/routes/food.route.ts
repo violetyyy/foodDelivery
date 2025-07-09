@@ -5,7 +5,7 @@ import {
   createFood,
   updateFood,
   deleteFood,
-} from "../controllers/food.controller.js";
+} from "../controllers/food.controller";
 
 const foodsRouter = express.Router();
 

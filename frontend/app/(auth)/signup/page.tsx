@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const signInSchema = yup.object({
   email: yup
@@ -14,23 +16,52 @@ const signInSchema = yup.object({
   password: yup
     .string()
     .min(6, "Password must include 6 characters")
-    .required("Please must enter your password"),
+    .required("Please enter your password"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Please confirm your password"),
 });
 
-type SignInFormData = yup.InferType<typeof signInSchema>; // typescript utility type
+type SignInFormData = yup.InferType<typeof signInSchema>;
 
 export default function SignUp() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SignInFormData>({
-    resolver: yupResolver(signInSchema), // connect with yup validation
+    resolver: yupResolver(signInSchema),
     mode: "onChange",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (formData: SignInFormData) => {
-    console.log("formData", formData);
+    try {
+      const res = await fetch("http://localhost:8000/users/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      alert("Account created successfully!");
+      router.push("/");
+    } catch (error: any) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -61,7 +92,7 @@ export default function SignUp() {
           <input
             {...register("password")}
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             className=" w-full h-[36px] p-3 border border-gray-300 rounded-md"
             placeholder="Password"
           />
@@ -69,26 +100,33 @@ export default function SignUp() {
             <p className="text-red-500">{errors.password.message}</p>
           )}
           <input
-            {...register("password")}
-            id="password"
-            type="password"
-            className=" w-full h-[36px] p-3 border border-gray-300 rounded-md mt-6"
+            {...register("confirmPassword")}
+            id="confirmPassword"
+            type={showPassword ? "text" : "password"}
+            className="w-full h-[36px] p-3 border border-gray-300 rounded-md mt-6"
             placeholder="Confirm password"
           />
+          {errors.confirmPassword && (
+            <p className="text-red-500">{errors.confirmPassword.message}</p>
+          )}
+
           <div className=" mt-6 flex gap-2 align-middle ">
-            <input type="checkbox" className="w-4 rounded-sm fill-black" />
+            <input
+              type="checkbox"
+              className="w-4 rounded-sm fill-black"
+              onChange={() => setShowPassword((prev) => !prev)}
+            />
+
             <p className=" font-normal text-[14px] text-[#71717A]">
               Show password
             </p>
           </div>
-          <Link href={"/"} className="w-full">
-            <button
-              type="submit"
-              className="w-full h-[36px] mt-6 bg-black text-white rounded-md justify-center items-center flex"
-            >
-              Let's go
-            </button>
-          </Link>
+          <button
+            type="submit"
+            className="w-full h-[36px] mt-6 bg-black text-white rounded-md justify-center items-center flex"
+          >
+            Let's go
+          </button>
           <div className="flex gap-3 mt-6 justify-center">
             <p className="text-[16px] font-normal text-[#71717A]">
               Already have an account?

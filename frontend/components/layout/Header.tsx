@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const Header = () => {
   return (
     <div className="bg-[#18181B] py-[12px] px-[88px] flex justify-between items-center fixed top-0 w-screen">
@@ -12,12 +14,18 @@ export const Header = () => {
         </div>
       </div>
       <div className=" flex gap-3">
-        <div className="h-[36px] w-[75px] bg-white rounded-full flex justify-center items-center text-[14px] font-medium">
+        <Link
+          href={"/signup"}
+          className="h-[36px] w-[75px] bg-white rounded-full flex justify-center items-center text-[14px] font-medium"
+        >
           Sign Up
-        </div>
-        <div className="h-[36px] w-[65px] bg-[#EF4444] rounded-full justify-center items-center flex text-[14px] font-medium text-white">
+        </Link>
+        <Link
+          href={"/login"}
+          className="h-[36px] w-[65px] bg-[#EF4444] rounded-full justify-center items-center flex text-[14px] font-medium text-white"
+        >
           Log In
-        </div>
+        </Link>
       </div>
     </div>
   );
