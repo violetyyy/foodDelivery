@@ -7,7 +7,7 @@ export const fetchCategories = async (setCategories: {
   (arg0: any): void;
 }) => {
   try {
-    const response = await fetch(`${url}food-category`);
+    const response = await fetch(`${url}food-catgory`);
     const responseData = await response.json();
     setCategories(responseData.data);
   } catch (error) {

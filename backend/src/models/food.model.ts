@@ -8,6 +8,7 @@ const foodSchema = new Schema(
     price: { type: Number, required: true },
     image: { type: String },
     ingredients: { type: String },
+    category: { type: String },
   },
   {
     timestamps: true,

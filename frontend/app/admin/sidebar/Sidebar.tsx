@@ -6,7 +6,7 @@ const SideBar = ({ page }: { page: String }) => {
   return (
     <div className="fixed left-0 top-0 flex flex-col items-center min-h-screen py-9 px-5 bg-white gap-10 w-fit z-10">
       <div className="flex items-center gap-3">
-        <img src="/logo.png" alt="logo" className="w-[46px]" />
+        <img src="/logo.svg" alt="logo" className="w-[46px]" />
         <div>
           <p className="font-semibold text-lg text-[#09090B]">NomNom</p>
           <p className="text-xs text-[#71717A]">Swift delivery</p>

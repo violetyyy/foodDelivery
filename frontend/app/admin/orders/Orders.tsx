@@ -1,3 +1,4 @@
+"use client";
 import { fetchOrders } from "@/functions/Get";
 import { Order } from "@/app/(types)/page";
 import { Calendar } from "lucide-react";
@@ -30,7 +31,6 @@ export const Orders = () => {
           </div>
         </div>
       </div>
-      {/* orders */}
       <OrderNavigation></OrderNavigation>
       {orders &&
         orders.map((order, index) => {
