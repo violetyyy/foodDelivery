@@ -1,5 +1,4 @@
-import { Header, Footer } from "@/components/layout";
-import { HomeMenu } from "@/components/layout/HomeMenu";
+import { Header, Footer, HomeMenu } from "@/components/layout";
 
 export default function Home() {
   return (

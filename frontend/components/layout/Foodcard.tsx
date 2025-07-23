@@ -1,5 +1,13 @@
 import { Food } from "@/app/(types)/page";
 import { Plus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export const FoodCard = ({ food }: { food: Food }) => {
   return (
