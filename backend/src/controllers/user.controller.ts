@@ -39,7 +39,13 @@ export const signIn = async (req: Request, res: Response): Promise<void> => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      res.status(200).json({ success: true, message: "Authenticated" });
+      res.status(200).json({
+        success: true,
+        message: "Authenticated",
+        user: {
+          email: user.email,
+        },
+      });
     } else {
       res.status(401).json({ success: false, message: "Wrong password" });
     }
