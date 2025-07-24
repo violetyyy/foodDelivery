@@ -4,6 +4,7 @@ import { SquareChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import { useRouter } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 const signInSchema = yup.object({
@@ -20,6 +21,8 @@ const signInSchema = yup.object({
 type SignInFormData = yup.InferType<typeof signInSchema>;
 
 export default function SignUp() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -40,13 +43,18 @@ export default function SignUp() {
       });
 
       const data = await res.json();
+      console.log("Login response data:", data);
 
       if (!res.ok) {
         throw new Error(data.error || "Login failed");
       }
 
-      console.log("Sign in successful:", data);
-      // alert("Sign in successful!");
+      localStorage.setItem("userEmail", data.user?.email || "");
+      localStorage.setItem("token", data.token);
+
+      console.log("Saved email to localStorage:", data.user?.email);
+
+      router.push("/");
     } catch (err: any) {
       console.error("Login error:", err);
       alert(err.message);
