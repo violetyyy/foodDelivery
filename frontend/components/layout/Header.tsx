@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ChevronRight, MapPin, ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
+import { Button } from "../ui/button";
 import {
   Sheet,
   SheetContent,
@@ -32,7 +33,6 @@ export const Header = () => {
 
   return (
     <div className="bg-[#18181B] py-[12px] px-[88px] flex justify-between items-center fixed top-0 w-screen z-50">
-      {/* Logo */}
       <div className="flex gap-3">
         <img src="/logo.svg" alt="logo" />
         <div className="flex flex-col">
@@ -60,8 +60,8 @@ export const Header = () => {
                 <ShoppingCart size={16} color="black" />
               </div>
             </SheetTrigger>
-            <SheetContent className="bg-[#404040] p-8 overflow-x-scroll rounded-l-[20px] border-0">
-              <div className="flex text-cloude-gray gap-6 flex-col">
+            <SheetContent className="bg-[#404040] p-8 overflow-x-scroll rounded-l-[20px] border-0 !max-w-[535px]">
+              <div className="flex text-cloude-gray gap-6 flex-col w-full h-full">
                 <div className="flex gap-2">
                   <ShoppingCart color="white" />
                   <SheetTitle className="font-semibold text-xl text-white">
@@ -76,7 +76,7 @@ export const Header = () => {
                   <div className="w-[50%] justify-center flex">Order</div>
                 </div>
 
-                <div className="w-full rounded-[20px] bg-white p-4 flex flex-col justify-between">
+                <div className="w-full h-full rounded-[20px] bg-white p-4 flex flex-col justify-between">
                   <div className="flex flex-col gap-5">
                     <p className="font-semibold text-xl text-muted-foreground">
                       My Cart
@@ -89,6 +89,33 @@ export const Header = () => {
                     </div>
                   </div>
                   <div>jksd</div>
+                </div>
+                <div className="bg-white h-[30%] w-full flex flex-col rounded-[20px] p-4 gap-5">
+                  <div className="text-[20px] font-semibold text-muted-foreground">
+                    Payment info
+                  </div>
+                  <div className="flex justify-between">
+                    <div className="text-[16px] text-muted-foreground">
+                      Items
+                    </div>
+                    <div className="text-[16px] font-bold ">$123</div>
+                  </div>
+                  <div className="flex justify-between">
+                    <div className="text-[16px] text-muted-foreground">
+                      Shipping
+                    </div>
+                    <div className="text-[16px] font-bold ">$0.99</div>
+                  </div>
+                  <div className=" border-t border-foreground-50 border-dashed"></div>
+                  <div className="flex justify-between">
+                    <div className="text-[16px] text-muted-foreground">
+                      Total
+                    </div>
+                    <div className="text-[16px] font-bold ">$123</div>
+                  </div>
+                  <Button className="w-full bg-[#EF4444] text-white rounded-[20px]">
+                    Checkout
+                  </Button>
                 </div>
               </div>
             </SheetContent>

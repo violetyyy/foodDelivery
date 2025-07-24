@@ -57,8 +57,8 @@ export default function SignUp() {
         throw new Error(data.error || "Something went wrong");
       }
 
-      alert("Account created successfully!");
-      router.push("/");
+      alert("Account created successfully! Login to your account");
+      router.push("/login");
     } catch (error: any) {
       alert(error.message);
     }

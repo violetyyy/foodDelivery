@@ -1,6 +1,6 @@
 "use client";
 
-import { SquareChevronLeft } from "lucide-react";
+import { SquareChevronLeft, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -47,6 +47,8 @@ export default function SignUp() {
 
       if (!res.ok) {
         throw new Error(data.error || "Login failed");
+      } else {
+        alert("Successfully logged in!");
       }
 
       localStorage.setItem("userEmail", data.user?.email || "");
