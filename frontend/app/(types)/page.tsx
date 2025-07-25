@@ -6,7 +6,7 @@ export type Food = {
   ingredients: string;
   category: {
     categoryName: string;
-    categoryId: string;
+    _id: string;
   };
 };
 
@@ -19,8 +19,8 @@ export type NewFood = {
 };
 
 export type Category = {
-  _id: string;
   categoryName: string;
+  _id: string;
 };
 
 export type Order = {

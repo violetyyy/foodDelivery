@@ -3,7 +3,6 @@
 import { Food } from "@/app/(types)/page";
 import { Plus, ShoppingCart } from "lucide-react";
 import { useState } from "react";
-import { Label } from "@radix-ui/react-label";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {

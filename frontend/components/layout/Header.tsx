@@ -60,7 +60,7 @@ export const Header = () => {
                 <ShoppingCart size={16} color="black" />
               </div>
             </SheetTrigger>
-            <SheetContent className="bg-[#404040] p-8 overflow-x-scroll rounded-l-[20px] border-0 !max-w-[535px]">
+            <SheetContent className="bg-[#404040] p-8 overflow-x-scroll rounded-l-[20px] border-0 !max-w-[505px] overflow-hidden">
               <div className="flex text-cloude-gray gap-6 flex-col w-full h-full">
                 <div className="flex gap-2">
                   <ShoppingCart color="white" />
@@ -90,7 +90,7 @@ export const Header = () => {
                   </div>
                   <div>jksd</div>
                 </div>
-                <div className="bg-white h-[30%] w-full flex flex-col rounded-[20px] p-4 gap-5">
+                <div className="bg-white h-[38%] w-full flex flex-col rounded-[20px] p-4 gap-5">
                   <div className="text-[20px] font-semibold text-muted-foreground">
                     Payment info
                   </div>
