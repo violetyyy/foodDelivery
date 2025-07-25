@@ -16,7 +16,7 @@ export const HomeMenu = () => {
       const data = rawData as Category[];
 
       const uniqueCategories = Array.from(
-        new Map(data.map((cat) => [cat.categoryName, cat])).values()
+        new Map(data.map((cat) => [cat.name, cat])).values()
       );
 
       setCategories(uniqueCategories);
@@ -32,7 +32,7 @@ export const HomeMenu = () => {
     <div className="container flex flex-col gap-[54px]">
       {categories.map((category) => {
         const categoryFoods = foods.filter(
-          (food) => food.category?._id === category._id
+          (food) => food.category === category.name
         );
 
         if (categoryFoods.length === 0) return null;
@@ -40,7 +40,7 @@ export const HomeMenu = () => {
         return (
           <div key={category._id} className="flex flex-col gap-6">
             <h2 className="font-semibold text-3xl text-[#FFFFFF]">
-              {category.categoryName}
+              {category.name}
             </h2>
             <div className="grid grid-cols-3 gap-12">
               {categoryFoods.map((food) => (

@@ -19,7 +19,7 @@ export type NewFood = {
 };
 
 export type Category = {
-  categoryName: string;
+  name: string;
   _id: string;
 };
 
