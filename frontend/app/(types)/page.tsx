@@ -46,3 +46,8 @@ export type foodOrderItem = {
   food: Food;
   quantity: number;
 };
+
+export type CartItem = {
+  food: Food;
+  quantity: number;
+};
