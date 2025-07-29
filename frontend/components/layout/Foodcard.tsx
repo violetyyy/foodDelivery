@@ -13,9 +13,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
+import { useCart } from "@/contexts/CartContext";
 
 export const FoodCard = ({ food }: { food: Food }) => {
   const [quantityCount, setCount] = useState(1);
+  const { addToCart } = useCart();
 
   const handleDecrease = () => {
     if (quantityCount > 1) setCount(quantityCount - 1);
@@ -23,6 +25,11 @@ export const FoodCard = ({ food }: { food: Food }) => {
 
   const handleIncrease = () => {
     setCount(quantityCount + 1);
+  };
+
+  const handleAddToCart = () => {
+    addToCart(food, quantityCount);
+    setCount(1);
   };
 
   return (
@@ -124,7 +131,10 @@ export const FoodCard = ({ food }: { food: Food }) => {
                 </div>
               </div>
               <div>
-                <Button className="w-full rounded-full py-2 px-8">
+                <Button
+                  className="w-full rounded-full py-2 px-8"
+                  onClick={handleAddToCart}
+                >
                   Add to cart
                 </Button>
               </div>
