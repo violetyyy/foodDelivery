@@ -19,6 +19,13 @@ const nextConfig: NextConfig = {
     // your project has type errors.
     ignoreBuildErrors: true,
   },
+  // App directory is enabled by default in Next.js 13+
+  // Add proper trailing slash handling
+  trailingSlash: false,
+  // Ensure all routes are properly generated
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
+  },
 };
 
 export default nextConfig;
