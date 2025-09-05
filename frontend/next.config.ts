@@ -9,8 +9,6 @@ const nextConfig: NextConfig = {
     domains: ['localhost', 'res.cloudinary.com'],
     unoptimized: true, // For Vercel deployment
   },
-  output: 'standalone', // For better Vercel compatibility
-  serverExternalPackages: ['mongoose'],
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
