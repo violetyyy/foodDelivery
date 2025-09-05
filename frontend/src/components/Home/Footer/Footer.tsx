@@ -8,7 +8,8 @@ const Footer = () => {
 
   const fetchFoods = async () => {
     try {
-      const response = await fetch("http://localhost:4000/food");
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${API_URL}/food`);
       const responseData = await response.json();
       setFoods(responseData.data);
     } catch (error) {

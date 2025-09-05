@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:vercel": "next build",
+    "deploy": "vercel --prod"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

@@ -10,18 +10,20 @@ export const signUp: ExpressHandler = async (req, res, next) => {
     
     // Validate required fields
     if (!firstName || !lastName || !email || !password) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "All fields are required"
       });
+      return;
     }
 
     const user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "User already exists"
       });
+      return;
     }
 
     const newUser = await User.create({
@@ -55,26 +57,29 @@ export const signIn: ExpressHandler = async (req, res, next) => {
     const { email, password } = req.body;
     
     if (!email || !password) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Email and password are required"
       });
+      return;
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message: "Invalid email or password"
       });
+      return;
     }
 
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message: "Invalid email or password"
       });
+      return;
     }
 
     const accessToken = generateAccessToken({

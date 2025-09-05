@@ -27,7 +27,7 @@ const CategoryEditModal = ({
     setLoading(true);
     setError("");
     try {
-      await patchCategory(category._id, categoryName);
+      await patchCategory(category._id, { categoryName });
       fetchAllData();
       handleClose();
     } catch (err) {
