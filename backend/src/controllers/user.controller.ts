@@ -6,19 +6,45 @@ import { generateAccessToken } from "../utils/functions/jwt.js";
 
 export const signUp: ExpressHandler = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
+    
+    // Validate required fields
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
+    }
+
     const user = await User.findOne({ email });
     if (user) {
-      throw new Error("User already exists");
+      return res.status(400).json({
+        success: false,
+        message: "User already exists"
+      });
     }
 
     const newUser = await User.create({
-      ...req.body,
+      firstName,
+      lastName,
+      email,
       password: await hashPassword(password),
       role: "user",
       isVerified: false,
     });
-    res.status(201).json({ success: true, data: newUser });
+
+    const accessToken = generateAccessToken({
+      userId: newUser._id,
+      email: newUser.email,
+    });
+
+    res.status(201).json({ 
+      success: true, 
+      data: { 
+        user: newUser,
+        token: accessToken
+      } 
+    });
   } catch (err) {
     next(err);
   }
@@ -27,14 +53,28 @@ export const signUp: ExpressHandler = async (req, res, next) => {
 export const signIn: ExpressHandler = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required"
+      });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
-      throw new Error("User not found");
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
     }
 
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
-      throw new Error("Invalid password");
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
     }
 
     const accessToken = generateAccessToken({
@@ -42,7 +82,13 @@ export const signIn: ExpressHandler = async (req, res, next) => {
       email: user.email,
     });
 
-    res.status(200).json({ success: true, data: { accessToken } });
+    res.status(200).json({ 
+      success: true, 
+      data: { 
+        user: user,
+        token: accessToken
+      } 
+    });
   } catch (err) {
     next(err);
   }

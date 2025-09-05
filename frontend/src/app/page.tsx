@@ -8,7 +8,7 @@ const Home = () => {
     <div className="flex flex-col gap-22 bg-neutral-700 items-center">
       <section>
         <Navigation></Navigation>
-        <img src="/bg.png" alt="bg" className="w-screen" />
+        <img src="/bg.png" alt="bg" className="w-screen mb-8" />
       </section>
       <HomeMenu></HomeMenu>
       <Footer></Footer>

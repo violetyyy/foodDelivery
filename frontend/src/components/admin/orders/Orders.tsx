@@ -1,17 +1,49 @@
 import { fetchOrders } from "@/functions/fetcherFunctions/GET";
 import { Order } from "@/types";
 import { Calendar } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { OrderNavigation, SingleOrder } from "./index";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import UserContext from "@/context/userContext";
+import OrderStatusModal from "../modals/OrderStatusModal";
 
 export const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const { token, isAuthenticated } = useContext(UserContext);
 
   useEffect(() => {
-    fetchOrders(setOrders);
-  }, []);
+    if (isAuthenticated && token) {
+      setIsLoading(true);
+      fetchOrders(setOrders, token).finally(() => setIsLoading(false));
+    }
+  }, [isAuthenticated, token]);
+
+  const fetchAllData = () => {
+    if (isAuthenticated && token) {
+      fetchOrders(setOrders, token);
+    }
+  };
+
+  const handleChangeDeliveryState = () => {
+    if (orders.length === 0) {
+      toast.warning("No orders available to update");
+      return;
+    }
+    
+    // For now, let's open the modal with the first order
+    // In a real implementation, you might want to select multiple orders
+    setSelectedOrder(orders[0]);
+    setIsStatusModalOpen(true);
+  };
+
+  const handleOrderStatusClick = (order: Order) => {
+    setSelectedOrder(order);
+    setIsStatusModalOpen(true);
+  };
   return (
     <div className="p-6 bg-white rounded-xl flex flex-col gap-4 shadow-md animate-fadeIn">
       <div className="p-4 flex justify-between items-center bg-white rounded-t-lg">
@@ -26,17 +58,46 @@ export const Orders = () => {
             <Calendar size={16} />
             <p>13 June 2023 - 14 July 2023</p>
           </div>
-          <div className="px-4 py-2 text-[#FAFAFA] bg-[#acacae] rounded-full">
+          <button
+            className="px-4 py-2 text-[#FAFAFA] bg-[#EF4444] rounded-full hover:bg-[#DC2626] transition duration-200 cursor-pointer disabled:bg-[#acacae] disabled:cursor-not-allowed"
+            onClick={handleChangeDeliveryState}
+            disabled={orders.length === 0}
+          >
             Change delivery state
-          </div>
+          </button>
         </div>
       </div>
       {/* orders */}
       <OrderNavigation></OrderNavigation>
-      {orders &&
+      {!isAuthenticated ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <p className="text-lg font-semibold text-gray-600 mb-2">Authentication Required</p>
+          <p className="text-sm text-gray-500">Please sign in to view orders</p>
+        </div>
+      ) : isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-gray-500">Loading orders...</div>
+        </div>
+      ) : orders && orders.length > 0 ? (
         orders.map((order, index) => {
-          return <SingleOrder order={order} key={index}></SingleOrder>;
-        })}
+          return <SingleOrder order={order} key={index} onStatusClick={handleOrderStatusClick}></SingleOrder>;
+        })
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <p className="text-lg font-semibold text-gray-600 mb-2">No orders found</p>
+          <p className="text-sm text-gray-500">Orders will appear here when customers place them</p>
+        </div>
+      )}
+      
+      {/* Order Status Modal */}
+      {isStatusModalOpen && selectedOrder && (
+        <OrderStatusModal
+          setIsModalOpen={setIsStatusModalOpen}
+          order={selectedOrder}
+          fetchAllData={fetchAllData}
+        />
+      )}
+      
       <style jsx global>{`
         @keyframes fadeIn {
           from {

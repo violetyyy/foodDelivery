@@ -1,7 +1,7 @@
 export type Food = {
   _id: string;
   foodName: string;
-  price: string;
+  price: number;
   image: string;
   ingredients: string;
   quantity: number;
@@ -13,10 +13,11 @@ export type Food = {
 
 export type NewFood = {
   foodName: string;
-  price: string;
+  price: number;
   image: string;
   ingredients: string;
-  categoryId: string;
+  quantity: number;
+  category: string;
 };
 
 export type Category = {
@@ -46,4 +47,30 @@ export type foodOrderItem = {
   _id: string;
   food: Food;
   quantity: number;
+};
+
+export type FoodOrder = {
+  _id: string;
+  user: string; // User ID
+  totalPrice: number;
+  foodOrderItems: {
+    food: string; // Food ID
+    quantity: number;
+  }[];
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CartItem = {
+  _id: string;
+  foodName: string;
+  price: number;
+  image: string;
+  ingredients: string;
+  quantity: number;
+  category: {
+    categoryName: string;
+    _id: string;
+  };
 };

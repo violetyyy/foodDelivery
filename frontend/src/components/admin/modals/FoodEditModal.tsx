@@ -3,8 +3,7 @@ import { fetchCategories } from "@/functions/fetcherFunctions/GET";
 import { patchFood } from "@/functions/fetcherFunctions/PATCH";
 import { Category, Food } from "@/types";
 import { Trash, X, Image } from "lucide-react";
-import { CldUploadButton } from "next-cloudinary";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +24,7 @@ const FoodEditModal = ({
 }: FoodAddModalProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchCategories(setCategories);
@@ -32,10 +32,11 @@ const FoodEditModal = ({
 
   const [inputs, setInputs] = useState({
     foodName: food.foodName,
-    price: food.price,
+    price: food.price.toString(), // Convert number to string for input field
     ingredients: food.ingredients,
     image: food.image,
     category: food.category.categoryName,
+    quantity: food.quantity,
   });
 
   const handleClose = () => {
@@ -64,17 +65,15 @@ const FoodEditModal = ({
         (cat) => cat.categoryName === inputs.category
       );
 
-      const updatedFood: Food = {
+      const updatedFood = {
         _id: food._id,
         foodName: inputs.foodName,
-        price: inputs.price,
+        price: parseFloat(inputs.price), // Convert string to number
         image: inputs.image,
         ingredients: inputs.ingredients,
-        // Use the category ID, not the name
-        category: {
-          _id: selectedCategory?._id || food.category._id,
-          categoryName: inputs.category,
-        },
+        quantity: inputs.quantity,
+        // Send only the category ID as expected by backend
+        category: selectedCategory?._id || food.category._id,
       };
 
       await patchFood(food._id, updatedFood);
@@ -87,14 +86,61 @@ const FoodEditModal = ({
     }
   };
 
-  const handleImageUpload = (result: any) => {
-    if (result?.info?.secure_url) {
-      setInputs({ ...inputs, image: result.info.secure_url });
+  const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.8): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new window.Image();
+      
+      img.onload = () => {
+        // Calculate new dimensions
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress
+        ctx?.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedDataUrl);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+      
+      try {
+        const compressedImage = await compressImage(file);
+        setInputs({ ...inputs, image: compressedImage });
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        alert('Error processing image. Please try again.');
+      }
     }
   };
 
   const handleClear = () => {
     setInputs({ ...inputs, image: "" });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleCategoryClick = (category: string) => {
@@ -171,11 +217,21 @@ const FoodEditModal = ({
         <div className="flex  gap-4">
           <p className="text-xs text-[#71717A] w-2/5 ">Price</p>
           <input
-            type="text"
+            type="number"
             className="px-3 py-2 border border-[#E4E4E7] rounded-md focus:outline-none w-full"
-            placeholder="Type food name"
+            placeholder="Enter price"
             value={inputs.price}
             onChange={(e) => setInputs({ ...inputs, price: e.target.value })}
+          />
+        </div>
+        <div className="flex  gap-4">
+          <p className="text-xs text-[#71717A] w-2/5 ">Quantity</p>
+          <input
+            type="number"
+            className="px-3 py-2 border border-[#E4E4E7] rounded-md focus:outline-none w-full"
+            placeholder="Enter quantity"
+            value={inputs.quantity}
+            onChange={(e) => setInputs({ ...inputs, quantity: parseInt(e.target.value) || 0 })}
           />
         </div>
         <div className="flex  gap-4">
@@ -198,12 +254,18 @@ const FoodEditModal = ({
                 </button>
               </div>
             ) : (
-              <CldUploadButton
-                uploadPreset="food-delivery"
-                onSuccess={handleImageUpload}
-                className="w-full"
-              >
-                <div className="flex flex-col justify-center items-center gap-2 px-3 border border-[#2563eb33] rounded-md cursor-pointer bg-[#2563eb0d] border-dashed transition duration-200 py-10 hover:bg-[#2563eb1a]">
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <div
+                  onClick={handleUploadClick}
+                  className="flex flex-col justify-center items-center gap-2 px-3 border border-[#2563eb33] rounded-md cursor-pointer bg-[#2563eb0d] border-dashed transition duration-200 py-10 hover:bg-[#2563eb1a]"
+                >
                   <div className="rounded-full bg-white p-2">
                     <Image />
                   </div>
@@ -211,7 +273,7 @@ const FoodEditModal = ({
                     Choose a file or drag & drop it here
                   </p>
                 </div>
-              </CldUploadButton>
+              </div>
             )}
           </div>
         </div>

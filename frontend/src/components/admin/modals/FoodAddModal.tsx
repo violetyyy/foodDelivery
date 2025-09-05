@@ -1,8 +1,7 @@
 import { postFood } from "@/functions/fetcherFunctions/POST";
 import { Category } from "@/types";
 import { X, Image, Upload } from "lucide-react";
-import { useState } from "react";
-import { CldUploadButton } from "next-cloudinary";
+import { useState, useRef } from "react";
 
 interface FoodAddModalProps {
   setIsModalOpen: (open: boolean) => void;
@@ -20,8 +19,10 @@ const FoodAddModal = ({
     price: "",
     ingredients: "",
     image: "",
+    quantity: 0,
   });
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleClose = () => {
     setIsModalOpen(false);
@@ -33,10 +34,11 @@ const FoodAddModal = ({
       // Create the newFood object inside the submit function
       const newFood = {
         foodName: inputs.foodName,
-        price: inputs.price,
+        price: parseFloat(inputs.price), // Convert string to number
         image: inputs.image,
         ingredients: inputs.ingredients,
-        categoryId: category._id,
+        quantity: inputs.quantity,
+        category: category._id, // Use 'category' field name as expected by backend
       };
       await postFood(newFood);
       fetchAllData();
@@ -48,22 +50,61 @@ const FoodAddModal = ({
     }
   };
 
-  const handleImageUpload = (result: any) => {
-    try {
-      console.log("Upload result:", result);
-      if (result?.info?.secure_url) {
-        setInputs((prevInputs) => ({
-          ...prevInputs,
-          image: result.info.secure_url,
-        }));
+  const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.8): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new window.Image();
+      
+      img.onload = () => {
+        // Calculate new dimensions
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress
+        ctx?.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedDataUrl);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
       }
-    } catch (error) {
-      console.error("Error handling image upload:", error);
+      
+      try {
+        const compressedImage = await compressImage(file);
+        setInputs((prevInputs) => ({ ...prevInputs, image: compressedImage }));
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        alert('Error processing image. Please try again.');
+      }
     }
   };
 
   const handleClear = () => {
     setInputs((prevInputs) => ({ ...prevInputs, image: "" }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -121,6 +162,21 @@ const FoodAddModal = ({
           </div>
         </div>
         <div className="flex flex-col gap-2">
+          <p className="font-medium">Quantity</p>
+          <input
+            type="number"
+            className="px-3 py-2 border border-[#E4E4E7] rounded-md focus:outline-none"
+            placeholder="Enter quantity..."
+            value={inputs.quantity}
+            onChange={(e) =>
+              setInputs((prevInputs) => ({
+                ...prevInputs,
+                quantity: parseInt(e.target.value) || 0,
+              }))
+            }
+          />
+        </div>
+        <div className="flex flex-col gap-2">
           <p className="font-medium">Ingredients</p>
           <textarea
             className="w-full px-3 py-2 border border-[#E4E4E7] rounded-md focus:outline-none"
@@ -156,19 +212,18 @@ const FoodAddModal = ({
                 </button>
               </div>
             ) : (
-              <CldUploadButton
-                uploadPreset="food-delivery"
-                onSuccess={handleImageUpload}
-                onError={(error) => console.error("Upload error:", error)}
-                options={{
-                  maxFiles: 1,
-                  resourceType: "image",
-                  clientAllowedFormats: ["jpg", "jpeg", "png", "gif", "webp"],
-                  maxFileSize: 10000000, // 10MB
-                }}
-                className="w-full"
-              >
-                <div className="flex flex-col justify-center items-center gap-2 px-3 border border-[#2563eb33] rounded-md cursor-pointer bg-[#2563eb0d] border-dashed transition duration-200 py-10 hover:bg-[#2563eb1a]">
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <div
+                  onClick={handleUploadClick}
+                  className="flex flex-col justify-center items-center gap-2 px-3 border border-[#2563eb33] rounded-md cursor-pointer bg-[#2563eb0d] border-dashed transition duration-200 py-10 hover:bg-[#2563eb1a]"
+                >
                   <div className="rounded-full bg-white p-2">
                     <Image />
                   </div>
@@ -176,7 +231,7 @@ const FoodAddModal = ({
                     Choose a file or drag & drop it here
                   </p>
                 </div>
-              </CldUploadButton>
+              </div>
             )}
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import { patchCategory } from "@/functions/fetcherFunctions/PATCH/patchCategory";
-import { deleteCategory } from "@/functions/fetcherFunctions/DELETE/deleteCategory";
+import { patchCategory } from "@/functions/fetcherFunctions/PATCH";
+import { deleteCategory } from "@/functions/fetcherFunctions/DELETE";
 import { Category } from "@/types";
 
 interface CategoryEditModalProps {

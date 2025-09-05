@@ -1,15 +1,8 @@
 import { Food } from "@/types";
-import { Pen } from "lucide-react";
+import { Pen, Trash2 } from "lucide-react";
 import { useState } from "react";
 import FoodEditModal from "../modals/FoodEditModal";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { deleteFood } from "@/functions/fetcherFunctions/DELETE";
 
 export const AdminFoodCard = ({
   food,
@@ -19,38 +12,72 @@ export const AdminFoodCard = ({
   fetchAllData: () => void;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!window.confirm(`Are you sure you want to delete "${food.foodName}"?`)) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deleteFood(food._id);
+      fetchAllData(); // Refresh the data after deletion
+    } catch (error) {
+      console.error("Error deleting food:", error);
+      alert("Failed to delete food. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="p-4 rounded-[20px] border border-[#E4E4E7] flex flex-col gap-5 bg-white shadow-md hover:shadow-lg transition duration-200 animate-fadeIn">
       <div
-        className="w-full h-[210px] bg-center bg-cover rounded-xl p-5 flex justify-end items-end "
+        className="w-full h-[210px] bg-center bg-cover rounded-xl p-5 flex justify-between items-end "
         style={{ backgroundImage: `url(${food.image})` }}
       >
-        <div
-          className="bg-white rounded-full p-4 text-red-500 hover:bg-[#E4E4E7] cursor-pointer bg-no-repeat focus:ring-2 focus:ring-red-400 transition duration-150"
-          // onClick={() => {
-          //   setIsModalOpen(true);
-          // }}
-          // tabIndex={0}
-          // onKeyDown={(e) => {
-          //   if (e.key === "Enter") setIsModalOpen(true);
-          // }}
+        {/* Delete Button */}
+        <button
+          className="bg-white rounded-full p-3 text-red-500 hover:bg-red-50 hover:text-red-600 cursor-pointer focus:ring-2 focus:ring-red-400 transition duration-150 shadow-md"
+          onClick={handleDelete}
+          disabled={isDeleting}
+          title="Delete food item"
         >
-          <Dialog>
-            <DialogTrigger>
-              <Pen />
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
-                </DialogDescription>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-        </div>
+          {isDeleting ? (
+            <svg
+              className="animate-spin h-5 w-5 text-red-500"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              ></path>
+            </svg>
+          ) : (
+            <Trash2 size={20} />
+          )}
+        </button>
+
+        {/* Edit Button */}
+        <button
+          className="bg-white rounded-full p-3 text-blue-500 hover:bg-blue-50 hover:text-blue-600 cursor-pointer focus:ring-2 focus:ring-blue-400 transition duration-150 shadow-md"
+          onClick={() => setIsModalOpen(true)}
+          title="Edit food item"
+        >
+          <Pen size={20} />
+        </button>
       </div>
 
       <div className="flex flex-col gap-2 ">

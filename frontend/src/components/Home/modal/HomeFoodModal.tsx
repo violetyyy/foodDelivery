@@ -1,5 +1,5 @@
 import { cartContext } from "@/context/cartContext";
-import { Food } from "@/types";
+import { Food, CartItem } from "@/types";
 import { Minus, Plus, X } from "lucide-react";
 import { useContext, useState } from "react";
 
@@ -13,13 +13,27 @@ export const HomeFoodModal = ({
   setIsAddedToCart: (isAddedToCart: boolean) => void;
 }) => {
   const [quantity, setQuantity] = useState(1);
-  const { cartItems, setCartItems } = useContext(cartContext);
+  const { addToCart } = useContext(cartContext);
 
-  const addToCart = (food: Food, quantity: number) => {
-    const newCart = [...cartItems, { ...food, quantity }];
-    setCartItems(newCart);
+  const handleAddToCart = (food: Food, quantity: number) => {
+    const cartItem: CartItem = {
+      _id: food._id,
+      foodName: food.foodName,
+      price: food.price,
+      image: food.image,
+      ingredients: food.ingredients,
+      quantity: quantity,
+      category: food.category,
+    };
+    
+    addToCart(cartItem);
     setIsModalOpen(false);
     setIsAddedToCart(true);
+    
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+      setIsAddedToCart(false);
+    }, 3000);
   };
 
   // Modal backdrop дээр дарахад хаах функц
@@ -85,7 +99,7 @@ export const HomeFoodModal = ({
             </div>
             <button
               className="bg-[#18181B] text-white px-4 py-2 rounded-full w-full cursor-pointer"
-              onClick={() => addToCart(food, quantity)}
+              onClick={() => handleAddToCart(food, quantity)}
             >
               Add to cart
             </button>

@@ -1,4 +1,4 @@
-import { Category, Food, Order } from "@/types";
+import { Category, Food } from "@/types";
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -14,13 +14,8 @@ const createAuthenticatedRequest = () => {
   });
 };
 
-export const postCategory = async (category: Partial<Category>): Promise<Category> => {
-  const authAxios = createAuthenticatedRequest();
-  const response = await authAxios.post(`${API_URL}/food-category`, category);
-  return response.data.data;
-};
-
-export const postFood = async (food: {
+export const patchFood = async (foodId: string, food: {
+  _id: string;
   foodName: string;
   price: number;
   image: string;
@@ -29,12 +24,18 @@ export const postFood = async (food: {
   category: string;
 }): Promise<Food> => {
   const authAxios = createAuthenticatedRequest();
-  const response = await authAxios.post(`${API_URL}/food`, food);
+  const response = await authAxios.put(`${API_URL}/food/${foodId}`, food);
   return response.data.data;
 };
 
-export const postOrder = async (order: Partial<Order>): Promise<Order> => {
+export const patchCategory = async (categoryId: string, category: Partial<Category>): Promise<Category> => {
   const authAxios = createAuthenticatedRequest();
-  const response = await authAxios.post(`${API_URL}/food-order`, order);
+  const response = await authAxios.put(`${API_URL}/food-category/${categoryId}`, category);
   return response.data.data;
-}; 
+};
+
+export const patchOrder = async (orderId: string, orderData: { status: string }): Promise<any> => {
+  const authAxios = createAuthenticatedRequest();
+  const response = await authAxios.put(`${API_URL}/food-order/${orderId}`, orderData);
+  return response.data.data;
+};

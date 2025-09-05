@@ -1,11 +1,16 @@
-import { Food } from "@/types";
-import { useContext, useState } from "react";
+import { CartItem } from "@/types";
+import { useContext, useState, useEffect } from "react";
 import { Minus, Plus, X } from "lucide-react";
 import { cartContext } from "@/context/cartContext";
 
-const SidebarCard = ({ food }: { food: Food }) => {
+const SidebarCard = ({ food }: { food: CartItem }) => {
   const [quantity, setQuantity] = useState(food.quantity);
-  const { cartItems, setCartItems, updateQuantity } = useContext(cartContext);
+  const { updateQuantity, removeFromCart } = useContext(cartContext);
+
+  // Update local quantity when food quantity changes
+  useEffect(() => {
+    setQuantity(food.quantity);
+  }, [food.quantity]);
 
   // const editCartItems = (food: Food, quantity: number) => {
   //   const updatedCart = cartItems.map((item) => {
@@ -37,7 +42,7 @@ const SidebarCard = ({ food }: { food: Food }) => {
             <button
               className="size-9 flex justify-center items-center border border-red-500 rounded-full p-2 hover:bg-red-500 hover:text-white transition duration-200 cursor-pointer text-red-500"
               onClick={() => {
-                setCartItems(cartItems.filter((item) => item._id !== food._id));
+                removeFromCart(food._id);
               }}
             >
               <X />
@@ -49,8 +54,9 @@ const SidebarCard = ({ food }: { food: Food }) => {
             <Minus
               onClick={() => {
                 if (quantity > 1) {
-                  setQuantity(quantity - 1);
-                  updateQuantity(food._id, quantity);
+                  const newQuantity = quantity - 1;
+                  setQuantity(newQuantity);
+                  updateQuantity(food._id, newQuantity);
                 }
               }}
               className="cursor-pointer"
@@ -58,8 +64,9 @@ const SidebarCard = ({ food }: { food: Food }) => {
             <p>{quantity}</p>
             <Plus
               onClick={() => {
-                setQuantity(quantity + 1);
-                updateQuantity(food._id, quantity);
+                const newQuantity = quantity + 1;
+                setQuantity(newQuantity);
+                updateQuantity(food._id, newQuantity);
               }}
               className="cursor-pointer"
             />

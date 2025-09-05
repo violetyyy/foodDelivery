@@ -21,10 +21,11 @@ const CategoryModal = ({
   const handleAdd = async () => {
     setLoading(true);
     try {
-      await postCategory(categoryName);
+      await postCategory({ categoryName });
       fetchAllData();
       handleClose();
     } catch (error) {
+      console.error("Error adding category:", error);
       // Optionally handle error visually
     } finally {
       setLoading(false);

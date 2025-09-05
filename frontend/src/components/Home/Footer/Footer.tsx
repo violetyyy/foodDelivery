@@ -20,7 +20,7 @@ const Footer = () => {
   }, []);
   return (
     <div className="bg-[#18181B] w-full pt-15 pb-20 overflow-hidden flex flex-col items-center gap-20">
-      <div className="w-full bg-red-500 whitespace-nowrap">
+      <div className="w-full bg-red-500 whitespace-nowrap mt-8">
         <div className="animate-marquee inline-block font-semibold text-3xl py-7">
           <span className="mx-8 text-white">Fresh fast delivered</span>
           <span className="mx-8 text-white">Fresh fast delivered</span>
